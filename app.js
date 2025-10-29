@@ -1,76 +1,52 @@
-
-// require("dotenv").config();
-// const express = require("express");
-// const cors = require("cors");
-// const app = express();
-// const port = 2025;
-
-// const dbConnection = require("./db/dbConfig");
-// const UserRoutes = require("./routes/userRoute");
-// const QuestionRoutes = require("./routes/questionRoute");
-// const AnswerRoutes = require("./routes/answerRoute");
-
-// app.use(cors());
-// app.use(express.json());
-
-// app.get("/", (req, res) => {
-//   res.send("Evangadi Forum Backend is running");
-// });
-
-
-// app.use("/api/user", UserRoutes);
-// app.use("/api/question", QuestionRoutes);
-// app.use("/api/answer", AnswerRoutes);
-
-// app.use((req, res, next) => {
-//   console.log(`${req.method} ${req.url}`);
-//   next();
-// });
-
-
-// app.use((err, req, res, next) => {
-//   console.error(err.stack);
-//   res.status(500).json({ error: "Something went wrong!" });
-// });
-
-// async function start() {
-//   try {
-//     await dbConnection.execute("select 'test'");
-//     app.listen(port, () => {
-//       console.log("Database connection established");
-//       console.log(`Listening on http://localhost:${port}`);
-//     });
-//   } catch (error) {
-//     console.log("DB connection error:", error.message);
-//   }
-// }
-// start();
-
 require("dotenv").config();
 const express = require("express");
-const cors = require("cors");
 const app = express();
-const port = process.env.PORT || 2025;
-
-const dbConnection = require("./db/dbConfig");
-const UserRoutes = require("./routes/userRoute");
-const QuestionRoutes = require("./routes/questionRoute");
-const AnswerRoutes = require("./routes/answerRoute");
-
+const port = 2025;
+const cors = require("cors");
 app.use(cors());
+
+//do connection
+const dbConnection = require("./db/dbConfig");
+
+// authotication middlewar
+const authMiddleware = require("./middleware/authMiddleware");
+
+//user routes middleware file.file.
+const UserRoutes = require("./routes/userRoute");
+
+//do questions middleware
+const questionsRoutes = require("./routes/questionRoute");
+
+const answersRoutes = require("./routes/answerRoute");
+
+//json middleware to extract json
 app.use(express.json());
 
-// Logging
-app.use((req, res, next) => {
-  console.log(`${req.method} ${req.url}`);
-  next();
+// Root route for browser check
+app.get("/", (req, res) => {
+  res.send("Evangadi Forum Backend is running");
 });
 
-// Root routes
-app.get("/", (req, res) => res.send("Evangadi Forum Backend is running"));
-app.get("/health", (req, res) => res.json({ ok: true }));
 
-// Routes
+//user routes middleware
 app.use("/api/user", UserRoutes);
-app.use("/api/question", QuestionRoutes);
-app.use("/api/answer", AnswerRoutes);
+
+//questions routes middleware
+app.use("/api/question", authMiddleware, questionsRoutes);
+
+// app.use("/api/question", questionsRoutes);
+
+//answer routes middleware
+app.use("/api/answer", answersRoutes);
+// app.use("/api/answers", answersRoutes);
+async function start() {
+  try {
+    const result = await dbConnection.execute("select'test' ");
+    app.listen(port);
+    console.log("database connection established");
+    console.log(`listening on port  http://localhost:${port}`);
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+start();
