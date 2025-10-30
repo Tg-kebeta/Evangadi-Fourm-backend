@@ -41,16 +41,13 @@ app.use("/api/answer", answersRoutes);
 // app.use("/api/answers", answersRoutes);
 async function start() {
   try {
-    const result = await dbConnection.execute("SELECT 'test'");
-    console.log("DB test query result:", result);
+    const [rows] = await dbConnection.execute("SELECT NOW()");
+    console.log("DB connected. Current time:", rows[0]["NOW()"]);
     app.listen(port, () => {
-          console.log(`Server running at http://localhost:${port}`);
-        });
-    console.log("database connection established");
-    console.log(`listening on port  http://localhost:${port}`);
+      console.log(`Server running at http://localhost:${port}`);
+    });
   } catch (error) {
     console.error("Startup error:", error);
-    console.log(error.message);
   }
 }
 start();
