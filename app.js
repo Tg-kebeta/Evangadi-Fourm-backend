@@ -42,10 +42,14 @@ app.use("/api/answer", answersRoutes);
 async function start() {
   try {
     const result = await dbConnection.execute("SELECT 'test'");
-    app.listen(port);
+    console.log("DB test query result:", result);
+    app.listen(port, () => {
+          console.log(`Server running at http://localhost:${port}`);
+        });
     console.log("database connection established");
     console.log(`listening on port  http://localhost:${port}`);
   } catch (error) {
+    console.error("Startup error:", error);
     console.log(error.message);
   }
 }
