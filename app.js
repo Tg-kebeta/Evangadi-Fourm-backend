@@ -41,7 +41,7 @@ app.use("/api/answer", answersRoutes);
 // app.use("/api/answers", answersRoutes);
 async function start() {
   try {
-    const result = await dbConnection.execute("select'test' ");
+    const result = await dbConnection.execute("SELECT 'test'");
     app.listen(port);
     console.log("database connection established");
     console.log(`listening on port  http://localhost:${port}`);
